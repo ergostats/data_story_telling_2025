@@ -1,0 +1,462 @@
+---
+title: "Clase 1"
+author: "Pablo Sarango"
+institute: "ERGOSTATS"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: FALSE
+---
+
+# Conoce tu enfoque 
+
+---
+# Reproducibilidad 
+
+Es la capacidad de **replicar un análisis o experimento** utilizando los mismos datos, código y metodologías, **obteniendo resultados consistentes**. 
+
+Implica documentar y compartir de manera clara todos los pasos del proceso analítico.
+
+**Importancia**
+1. Garantiza la validez de los resultados
+2. Fomenta la transparencia
+3. Facilita la colaboración
+4. Permite el aprendizaje continuo
+
+--- 
+
+#  El flujo de un proyecto típico de ciencia de datos (definiciones)
+
+<img src = "https://es.r4ds.hadley.nz/diagrams_w_text_as_path/es/data-science.svg">
+
+**Importar**
+- Importar los datos es tomar datos que están guardados en un archivo, base de datos o API y cargarlos como _data frame_ en R.
+
+**Ordenar**
+- Ordenar los datos significa organizarlos de forma consistente, donde cada **columna** sea una *variable* y cada **fila** una *observación*, facilitando el análisis sin preocuparte por su estructura.
+
+**Transformar**
+- La transformación de datos consiste en **filtrar**, **crear nuevas variables** y **calcular estadísticas de resumen**, pasos clave para organizar y preparar los datos de manera eficiente.
+
+**Visualizar**
+- La visualización es clave para interpretar datos, ya que puede revelar patrones inesperados, plantear nuevas preguntas o indicar la necesidad de más datos.
+
+**Modelar**
+- Los modelos complementan la visualización al responder preguntas precisas mediante herramientas matemáticas o computacionales, pero están limitados por sus propios supuestos que el modelo no puede cuestionar.
+
+**Comunicar** 
+- La comunicación es el paso final y crucial en la ciencia de datos, ya que permite transmitir de manera efectiva los resultados obtenidos a partir del análisis.
+
+---
+
+# El concepto de `tidy data`
+
+Hay tres reglas que ordenan un conjunto de datos:
+
+- Cada variable debe tener su propia columna.
+- Cada observación debe tener su propia fila.
+- Cada valor debe tener su propia celda.
+
+ <img src = "https://bookdown.org/ddiannae/curso-rdata/img/tidy-1.png"
+ width="600"/>
+
+---
+
+# ¿Dónde vive tu análisis?
+
+## Scripts
+
+- Es un archivo de texto que contiene todas las interacciones importantes de tu código. 
+- La pregunta que te debes hacer en este caso es:
+
+¿Qué es lo que vas a guardar como **registro permanente** de tu análisis?
+
+En slides posteriores les hablaremos acerca de las *mejores prácticas* mientras realizan sus proyectos. 
+
+
+---
+# ¿Dónde vive tu análisis?
+## Rutas y directorios
+
+**Directorio:** Es el punto de referencia para localizar, acceder y manipular archivos y subdirectorios.
+
+**Rutas**
+
+.pull-left[
+- **absolutas:** Define la ubicación completa de un archivo o directorio desde la raíz del sistema de archivos.
+
+``` {r, eval = FALSE}
+# Ruta absoluta en Windows
+read.csv("C:/Users/Usuario/proyecto/datos.csv")
+```
+
+]
+
+.pull-right[
+- **relativas:** Define la ubicación de un archivo o directorio en relación con el *directorio de trabajo actual.*
+
+``` {r, eval = FALSE}
+# Ruta relativa al archivo dentro del directorio actual
+read.csv("datos.csv")
+
+# Ruta relativa a un archivo en un subdirectorio
+read.csv("data/datos.csv")
+
+# Ruta relativa para subir un nivel y acceder a otro directorio
+read.csv("../otro_proyecto/datos.csv")
+```
+]
+
+---
+# ¿Dónde vive tu análisis?
+## Crear `RStudio Projects`
+
+En R podemos agrupar todos los archivos (códigos, datos, imágenes, etc) relacionados a nuestro trabajo en una **misma carpeta**.
+
+Estos nos permite:
+
+- Mantener un flujo de trabajo consistente
+- Compartir el trabajo con otras personas
+- Continuar con el trabajo que se estaba haciendo anteriormente
+
+Para crear nuestro proyecto deberemos de ir al menú superior` File -> New Project` o a su vez en la esquina superior derecha damos clic en `Project`.
+
+
+---
+# Visualización de datos 
+
+## Primeros pasos creando un gráfico con `ggplot2`
+
+Usemos nuestro primer gráfico para responder una pregunta: ¿los automóviles con motores grandes consumen más combustible que los automóviles con motores pequeños?
+
+Pondremos a prueba esta pregunta usando el *data frame* `millas` del paquete **datos**. 
+
+- Un *data frame* es una estructura de datos bidimensional, similar a una tabla, que se utiliza para almacenar datos organizados en filas y columnas.
+- El _data frame_ `millas` contiene observaciones para 38 modelos de automóviles recopilado por la EPA - USA. 
+
+```{r, eval = FALSE}
+install.packages(c("tidyverse", "datos"))
+
+library(tidyverse)
+library(datos)
+```
+
+En donde: 
+1. `cilindrada`: tamaño del motor del automóvil, en litros.
+2. `autopista`: eficiencia del uso de combustible de un automóvil en carretera, en millas por galón.
+
+---
+# Visualización de datos 
+
+## Primeros pasos creando un gráfico con `ggplot2`
+
+Para crear un gráfico con `ggplot2` utilizamos la función `ggplot()` la cual establece la **base** sobre la cual se construirán los gráficos (el lienzo) al que se **agregarán capas**. 
+
+**Argumentos**
+1. `data`: Conjunto de datos que se va a graficar.
+2. `geom_<tipo>()`: Capa que define el tipo de gráfico, como puntos, barras, líneas, etc.
+3. `mapping()`: Define el mapeo estético, es decir como se asignan las variables del *data frame* a atributos visuales como el eje `x`, el eje `y`, el color, etc. Siempre aparece emparejacon con `aes()`.
+
+```{r, eval = FALSE}
+ggplot(data = millas) +
+	geom_point(mapping = aes(x = cilindrada, y = autopista))
+```
+
+---
+# Visualización de datos 
+## Plantilla de la gramática de gráficos 
+
+Podemos convertir el código anterior en una plantilla reutilizable: 
+
+```{r, eval = FALSE}
+ggplot(data = <DATOS>) +
+  <GEOM_FUNCIÓN>(mapping = aes(<MAPEOS>))
+```
+
+Por ejemplo podemos agregar una tercera variable (`clase`) al diagrama de dispersión asignándolo a un parámetro **estético**.
+
+- Un parámetro estético es una propiedad visual de los objetos de un gráfico (tamaño, forma, color, transparencia).
+
+Podemos referirnos a la propiedades estéticas como `nivel`. 
+
+Para asignar una **estética a una variable** debemos asociar el nombre de la estética al de la variable dentro de `aes()`. 
+
+```{r, eval = FALSE}
+ggplot(data = millas) +
+  geom_point(mapping = aes(x = cilindrada, y = autopista, color = clase))
+```
+
+`ggplot2` asignará automáticamente un nivel único de la estética (en este ejemplo, un color) a cada valor único de la variable.
+
+---
+# Conoce tu herramienta 
+
+---
+# Interfaz de RStudio
+
+## Editor 
+
+Este panel es donde escribes, editas y guardas tu código R en archivos de script (`.R`)
+
+## Consola 
+
+Aquí es donde se ejecuta el código en tiempo real. Muestra los resultados inmediatos, mensajes de error y advertencias.
+
+## Ambiente de trabajo
+
+El ambiente de trabajo o environment almacena todos los vectores, tablas, listas, y demás objetos de R que vayamos creando en nuestros análisis. 
+
+## Utilidades 
+
+Este es un panel multifuncional con varias pestañas:
+
+- **Files**: Navegar por el sistema de archivos. Permite abrir, guardar y gestionar archivos en el directorio de trabajo.
+- **Plots**: Visualización de gráficos generados en la sesión.
+- **Packages**: Listado de paquetes instalados. Permite instalar, cargar o actualizar paquetes.
+- **Help**: Documentación de funciones y paquetes.
+- **Viewer**: Visualización de documentos HTML, vistas interactivas y aplicaciones Shiny.
+
+
+---
+
+# Problemas comunes 
+## Ejecución de código
+
+Para ejecutar el código debe presionar: `ctrl + enter`. 
+
+Ejemplos:
+
+En caso de sentencias largas procura ubicarte al inicio o al fin del código que deseas ejecutar.
+
+```{r, eval = FALSE}
+
+ggplot(data = millas) + #<<
+  geom_boxplot(mapping = aes(x = fabricante, y = ciudad)) +
+                 labs(title = "Rendimiento en ciudad por fabricante", 
+                      x = "Fabricante", 
+                      y = "Rendimiento en ciudad (mpg)") +
+                 theme_minimal() #<<
+
+```
+
+---
+## Convención de notación de variables
+
+* El **nombre que le demos a una variable** debe comenzar con una letra y solo pueden contener letras, números, `_` y `.`
+* Lo ideal es que sean *nombres descriptivos*. 
+* Así también se recomienda **NO** usar tildes.
+
+Ejemplo: 
+
+```{r, eval = FALSE}
+vector_edades
+entradasMayo
+tabla.parroquia.quito
+```
+
+---
+
+# Guardar mis archivos 
+
+Recuerda verificar el `encoding` a la hora de guardar tus archivos. Para verificar que estás empleando `UTF-8` (es el encoding que abarca los símbolos del lenguaje español latino) accede al meno `Tools > Global Options`
+
+> Atajo de teclado para guardar: `ctrl + S`
+
+---
+## Instalar paquetes 
+
+En el transcurso de este curso haremos uso del paquete `tidyverse`. 
+
+Esta es una librería especial que añade una serie de librerías para manipulación de datos.
+
+.pull-left[
+
+**Instalar un paquete:**
+```{r, eval=FALSE}
+install.packages("tidyverse", dependencies = T)
+```
+
+**Instalar una versión en desarrollo**: 
+```{r, eval=FALSE}
+devtools::install_github("https://github.com/tidyverse/dplyr")
+```
+
+]
+
+.pull-right[
+
+**Cargar la librería para poder usarlas:** 
+```{r, eval= FALSE}
+library(tidyverse)
+```
+
+ **Ver librerías instaladas en el equipo:** 
+``` {r, eval=FALSE}
+View(installed.packages())
+```
+]
+
+--- 
+## Comentarios
+
+Cuando escribimos código recordemos que alguien más lo va a leer.
+
+* Para comentar una línea se pone el símbolo numeral `#` antes de lo que se quiera comentar. 
+* Para comentar un párrafo o una sección completa primero se debe seleccionar el contenido a comentar y a continuación presionar las teclas: 
+`ctrl + shift + C`
+
+```{r, eval=FALSE}
+# Este es un comentario
+print(x) # La función print muestra el contenido de `x`
+# print(y) Está linea no se va a ejecutar
+```
+
+* Añadir una nueva sección: `ctrl + shift + R`
+
+```{r, eval = FALSE}
+# Este es el título de mi sección --------------------------
+```
+
+> Es importante mantener nuestro código ordenado y comentado para cumplir con el principio de reproducibilidad.
+
+---
+
+# ¿Cómo lidiar con: 
+
+## Mensajes
+
+Cuando un mensaje aparece, R está indicando el correcto funcionamiento de esa función o sentencia. 
+
+Ejemplo: Al cargar la librería `tydiverse` el mensaje indica todos los conflictos y detalles que implica usar esta librería en el `environment`.
+
+```{r, eval = FALSE}
+library(tidyverse)
+```
+
+---
+## Errores
+
+- Indican que el código no puede continuar ejecutándose debido a un problema crítico.
+
+Ejemplo: Intentar dividir por cero o llamar a una función con argumentos incorrectos.
+
+```{r, eval = FALSE}
+1 / 0 
+
+# Resultado: Error in 1/0: division by zero
+```
+
+
+---
+## Warnings
+
+- Son alertas no críticas que indican que algo inusual ocurrió, pero el código sigue ejecutándose.
+
+Ejemplo: Usar una función con argumentos fuera del rango esperado o transformar datos de forma inesperada.
+
+```{r, eval = FALSE}
+log(-1) 
+
+# Resultado: Warning: NaNs produced
+```
+
+---
+
+# Fuentes de ayuda 
+
+En R, existen varias formas de obtener ayuda sobre funciones o documentos específicos:
+
+.pull-left[
+
+1. **`help()`**:  Utiliza esta función para obtener la documentación de una función específica.
+```{r, eval = FALSE}
+help(funcion)  
+```
+
+
+2. **`?`**:  Un atajo para la función `help()`. Basta con colocar el signo de interrogación antes del nombre de la función.
+```{r, eval = FALSE}
+?funcion
+```
+]
+
+.pull-right[
+3. **`help.search()`**:  Busca en todas las páginas de ayuda de R en función de una palabra clave.
+```{r, eval = FALSE}
+help.search("palabra_clave")
+```
+
+4. **`vignette()`**:  Muestra los documentos de vignettes, que son tutoriales más detallados sobre paquetes y funciones.
+```{r, eval = FALSE}
+vignette("nombre_paquete")
+```
+]
+
+---
+# Búsqueda efectiva de ayuda
+
+- **Define claramente tu problema**:
+    
+    - Antes de pedir ayuda, asegúrate de tener una idea clara de lo que necesitas. Un enunciado preciso ayuda a otros a comprender mejor tu problema y ofrecer una solución adecuada.
+    
+    _Ejemplo_:  
+    **Ineficaz**: "Mi código no funciona."  
+    **Eficaz**: "Tengo un error en mi código de R al intentar cargar un archivo CSV. El error es 'file not found'."
+    
+- **Usa palabras clave y frases específicas**:
+    
+    - Utiliza términos específicos relacionados con el problema que enfrentas. Las búsquedas genéricas pueden generar resultados irrelevantes.
+    
+    _Ejemplo_:  
+    En lugar de buscar "problema con gráficos", busca "error en ggplot2 al crear gráfico de barras".
+
+---
+# Búsqueda efectiva de ayuda
+
+- **Consulta fuentes confiables**:
+    
+    - Utiliza plataformas especializadas y fuentes confiables, como foros técnicos, documentación oficial o comunidades de expertos.
+    
+    _Ejemplo_:
+    
+    - Stack Overflow para problemas de programación.
+    - Crea un ejemplo reproducible
+
+- **Aprovecha las funcionalidades de búsqueda avanzada**:
+    
+    - Muchos motores de búsqueda y plataformas de soporte ofrecen opciones para refinar tu búsqueda (por fecha, tipo de archivo, etc.).
+    
+    _Ejemplo_:
+    
+    - En Google, usa comillas para buscar frases exactas: `"error en ggplot2 al crear gráfico"`.
+    
+---
+
+# Crea un ejemplo reproducible (replex)
+
+Es un fragmento de código que puedes compartir con otros para ilustrar un problema o una solución de manera clara y concisa.
+
+### Pasos para crear un **Reprex**:
+
+1. **Aísla el problema**: Reduce el código a la menor cantidad necesaria para reproducir el error o demostrar la situación.
+2. **Usa datos de ejemplo**: Si es posible, crea datos ficticios que tengan la misma estructura que tus datos reales, pero que no incluyan información sensible.
+3. **Mantén el formato**: Asegúrate de que el código sea limpio, organizado y sin errores evidentes.
+4. **Incluye la versión de los paquetes**: Si estás utilizando librerías específicas, indica la versión para garantizar que otros puedan reproducir el entorno.
+
+```{r, eval = FALSE}
+# Cargar los datos de ejemplo
+data(mtcars)
+
+# Crear un gráfico simple
+library(ggplot2)
+
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point()
+
+```
+
+---
